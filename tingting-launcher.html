@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>庭庭老師 · 我的網站導覽</title>
+<style>
+:root{--bg:#f3efe8;--card:#fff;--ink:#2b2a27;--mute:#7a766d;--line:#ddd7cb;--accent:#2f6f62;--accent-ink:#fff;--soft:#e6efe9;--danger:#b3402f}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1b1c1b;--card:#262928;--ink:#ecebe6;--mute:#9a978f;--line:#3a3d3b;--accent:#6fbfae;--accent-ink:#10231f;--soft:#2c3a36;--danger:#e07a68}}
+:root[data-theme="dark"]{--bg:#1b1c1b;--card:#262928;--ink:#ecebe6;--mute:#9a978f;--line:#3a3d3b;--accent:#6fbfae;--accent-ink:#10231f;--soft:#2c3a36;--danger:#e07a68}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;padding:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px)}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.wrap{max-width:980px;margin:0 auto;padding:28px 18px 60px}
+header{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:22px}
+h1{font-size:22px;margin:0;flex:1;min-width:160px}
+.sub{font-size:13px;color:var(--mute);font-weight:400;display:block;margin-top:2px}
+.search{padding:9px 12px;border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink);font:inherit;width:190px}
+.btn{padding:8px 14px;border-radius:10px;border:1px solid var(--line);background:var(--card)}
+.btn.on{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:600}
+.btn.pri{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:600}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:12px}
+.tile{position:relative;display:flex;flex-direction:column;gap:6px;padding:16px 14px;background:var(--card);border:1px solid var(--line);border-radius:14px;text-decoration:none;color:inherit;min-height:112px;transition:border-color .15s,transform .15s}
+.tile:hover{border-color:var(--accent);transform:translateY(-2px)}
+.ico{font-size:28px;line-height:1;width:46px;height:46px;display:grid;place-items:center;background:var(--soft);border-radius:12px}
+.nm{font-weight:600;font-size:15px;line-height:1.3;overflow-wrap:anywhere}
+.dm{font-size:12px;color:var(--mute);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tile.drag{opacity:.4}.tile.over{outline:2px dashed var(--accent)}
+.ops{position:absolute;top:8px;right:8px;display:none;gap:4px}
+.editing .ops{display:flex}
+.ops button{border:1px solid var(--line);background:var(--card);border-radius:8px;width:30px;height:30px;font-size:14px}
+.ops .d:hover{color:var(--danger);border-color:var(--danger)}
+.editing .tile{cursor:grab}
+.new{border:1.5px dashed var(--mute);background:none;align-items:center;justify-content:center;color:var(--mute);font-size:15px;text-align:center}
+.new:hover{color:var(--accent);border-color:var(--accent)}
+.note{color:var(--mute);font-size:13px;margin-top:22px;line-height:1.7}
+.none{grid-column:1/-1;color:var(--mute);padding:20px 0}
+.foot{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px}
+.foot button{background:none;border:none;color:var(--mute);font-size:13px;text-decoration:underline;padding:4px 2px}
+dialog{border:1px solid var(--line);border-radius:14px;background:var(--card);color:var(--ink);padding:20px;width:min(420px,92vw)}
+dialog::backdrop{background:rgba(0,0,0,.4)}
+dialog h2{margin:0 0 12px;font-size:17px}
+label{display:block;font-size:13px;color:var(--mute);margin:10px 0 4px}
+dialog input{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);font:inherit}
+.row{display:flex;gap:8px}.row .i{width:76px;flex:none}
+.acts{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}
+.err{color:var(--danger);font-size:13px;min-height:18px;margin-top:6px}
+.chk{display:flex;align-items:center;gap:8px;margin-top:12px;font-size:14px;color:var(--ink)}
+.chk input{width:auto}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>庭庭老師的網站導覽<span class="sub">點選卡片，直接前往對應的網站</span></h1>
+    <input class="search" id="q" type="search" placeholder="搜尋網站…" aria-label="搜尋網站">
+    <button class="btn" id="editBtn">✎ 編輯模式</button>
+  </header>
+  <main class="grid" id="grid"></main>
+  <p class="note" id="note"></p>
+  <div class="foot">
+    <button id="newTabBtn"></button>
+    <button id="expBtn">匯出設定（備份）</button>
+    <button id="impBtn">匯入設定</button>
+    <button id="rstBtn">還原預設</button>
+  </div>
+</div>
+
+<dialog id="dlg">
+  <form method="dialog" id="form" style="margin:0">
+    <h2 id="dlgTitle">新增網站</h2>
+    <div class="row">
+      <div style="flex:1"><label for="fName">名稱</label><input id="fName" maxlength="24" required></div>
+      <div class="i"><label for="fIcon">圖示</label><input id="fIcon" maxlength="4" placeholder="🔗"></div>
+    </div>
+    <label for="fUrl">網址</label>
+    <input id="fUrl" type="text" inputmode="url" placeholder="https://" required>
+    <div class="err" id="err"></div>
+    <div class="acts">
+      <button type="button" class="btn" id="cancelBtn">取消</button>
+      <button type="submit" class="btn pri">儲存</button>
+    </div>
+  </form>
+</dialog>
+<input type="file" id="file" accept="application/json" hidden>
+
+<script>
+const K="tingting.launcher.links.v1",KN="tingting.launcher.newtab.v1";
+const DEFAULTS=[
+  {id:"toeic",name:"多益單字",icon:"📖",url:"https://nannyting.github.io./Toeic/toeic-app.html"},
+  {id:"price",name:"在宅保母-收費標準",icon:"💰",url:"https://nannyting.github.io/ServicePrice/nannyTing.html"},
+  {id:"contact",name:"聯絡簿",icon:"📒",url:"https://nannyting.github.io./dailyContact/daily-contact-log.html"},
+  {id:"expense",name:"家庭支出帳本",icon:"🧾",url:"https://nannyting.github.io./ExpenseTracking/expense-ledger.html"},
+  {id:"life",name:"生活管理面板",icon:"🗂️",url:"https://nannyting.github.io./lifeDashboard/lifeDashboard.html"}
+];
+const $=id=>document.getElementById(id);
+const st={g(k){try{return localStorage.getItem(k)}catch(e){return null}},s(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+let links=[],editMode=false,editing=null,dragId=null,newTab=true,q="";
+
+function load(){
+  try{const d=JSON.parse(st.g(K));if(Array.isArray(d))links=d}catch(e){}
+  if(!links.length&&st.g(K)===null)links=DEFAULTS.map(x=>({...x}));
+  newTab=st.g(KN)!=="0";
+}
+const save=()=>st.s(K,JSON.stringify(links));
+const uid=()=>"l"+Date.now().toString(36)+Math.random().toString(36).slice(2,5);
+function norm(u){u=u.trim();if(!/^https?:\/\//i.test(u))u="https://"+u;try{new URL(u);return u}catch(e){return null}}
+function host(u){try{return new URL(u).hostname.replace(/\.$/,"")+new URL(u).pathname.replace(/\/[^\/]*$/,"")}catch(e){return u}}
+
+function render(){
+  document.body.classList.toggle("editing",editMode);
+  $("editBtn").classList.toggle("on",editMode);
+  $("editBtn").textContent=editMode?"✓ 完成編輯":"✎ 編輯模式";
+  $("newTabBtn").textContent="開啟方式：目前為「"+(newTab?"新分頁":"同一頁面")+"」（點此切換）";
+  $("note").textContent=editMode?"編輯模式：可拖曳卡片調整順序，用 ✎ 修改、✕ 刪除。":"";
+  const g=$("grid");g.innerHTML="";
+  const shown=links.filter(l=>!q||(l.name+l.url).toLowerCase().includes(q));
+  shown.forEach(l=>{
+    const a=document.createElement("a");a.className="tile";a.href=l.url;
+    if(newTab){a.target="_blank";a.rel="noopener"}
+    a.draggable=editMode;
+    a.innerHTML='<div class="ico"></div><div class="nm"></div><div class="dm"></div><div class="ops"><button class="e" title="修改" aria-label="修改">✎</button><button class="d" title="刪除" aria-label="刪除">✕</button></div>';
+    a.querySelector(".ico").textContent=l.icon||"🔗";
+    a.querySelector(".nm").textContent=l.name;
+    a.querySelector(".dm").textContent=host(l.url);
+    a.onclick=e=>{if(editMode)e.preventDefault()};
+    a.querySelector(".e").onclick=e=>{e.preventDefault();e.stopPropagation();openDlg(l)};
+    a.querySelector(".d").onclick=e=>{e.preventDefault();e.stopPropagation();
+      if(confirm("確定要刪除「"+l.name+"」嗎？\n（只會移除這個連結，不影響網站本身）")){links=links.filter(x=>x.id!==l.id);save();render()}};
+    a.ondragstart=e=>{dragId=l.id;a.classList.add("drag");e.dataTransfer.effectAllowed="move"};
+    a.ondragend=()=>{dragId=null;render()};
+    a.ondragover=e=>{if(editMode){e.preventDefault();a.classList.add("over")}};
+    a.ondragleave=()=>a.classList.remove("over");
+    a.ondrop=e=>{e.preventDefault();if(!dragId||dragId===l.id)return;
+      const f=links.findIndex(x=>x.id===dragId),t=links.findIndex(x=>x.id===l.id);
+      const [m]=links.splice(f,1);links.splice(t,0,m);save();render()};
+    g.appendChild(a);
+  });
+  if(!shown.length&&q){const p=document.createElement("div");p.className="none";p.textContent="找不到符合的網站。";g.appendChild(p)}
+  const n=document.createElement("button");n.className="tile new";n.innerHTML="＋ 新增網站";n.onclick=()=>openDlg(null);
+  g.appendChild(n);
+}
+function openDlg(l){
+  editing=l?l.id:null;
+  $("dlgTitle").textContent=l?"修改網站":"新增網站";
+  $("fName").value=l?l.name:"";$("fIcon").value=l?l.icon||"":"";$("fUrl").value=l?l.url:"";
+  $("err").textContent="";$("dlg").showModal();$("fName").focus();
+}
+$("cancelBtn").onclick=()=>$("dlg").close();
+$("form").onsubmit=e=>{
+  const name=$("fName").value.trim(),url=norm($("fUrl").value),icon=$("fIcon").value.trim();
+  if(!name||!url){e.preventDefault();$("err").textContent="請輸入名稱與正確的網址。";return}
+  if(editing)Object.assign(links.find(x=>x.id===editing),{name,url,icon});
+  else links.push({id:uid(),name,url,icon:icon||"🔗"});
+  save();render();
+};
+$("editBtn").onclick=()=>{editMode=!editMode;render()};
+$("q").oninput=e=>{q=e.target.value.trim().toLowerCase();render()};
+$("newTabBtn").onclick=()=>{newTab=!newTab;st.s(KN,newTab?"1":"0");render()};
+$("expBtn").onclick=()=>{
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(new Blob([JSON.stringify(links,null,2)],{type:"application/json"}));
+  a.download="tingting-launcher-links.json";a.click();
+};
+$("impBtn").onclick=()=>$("file").click();
+$("file").onchange=e=>{
+  const f=e.target.files[0];if(!f)return;const r=new FileReader();
+  r.onload=()=>{try{
+    const d=JSON.parse(r.result);if(!Array.isArray(d))throw 0;
+    const ok=d.filter(x=>x&&x.name&&norm(String(x.url||""))).map(x=>({id:x.id||uid(),name:String(x.name),icon:x.icon||"🔗",url:norm(String(x.url))}));
+    if(!ok.length)throw 0;
+    if(confirm("匯入將取代目前所有網站（共 "+ok.length+" 個），確定嗎？")){links=ok;save();render()}
+  }catch(err){alert("檔案格式不正確，無法匯入。")}};
+  r.readAsText(f);e.target.value="";
+};
+$("rstBtn").onclick=()=>{if(confirm("要還原成最初的 5 個網站嗎？目前自訂的內容會被取代。")){links=DEFAULTS.map(x=>({...x}));save();render()}};
+load();render();
+</script>
+</body>
+</html>
